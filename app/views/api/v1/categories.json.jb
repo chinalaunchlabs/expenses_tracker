@@ -1,0 +1,12 @@
+json = {}
+
+categories = @categories.map { |category|
+  {
+    id: category.id,
+    name: category.name
+  }  
+}
+
+json[:categories] = categories
+
+json
