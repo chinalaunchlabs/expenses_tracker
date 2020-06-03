@@ -10,10 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_03_054122) do
+ActiveRecord::Schema.define(version: 2020_06_03_080801) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "categories", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "records", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "category_id"
+    t.integer "type"
+    t.float "amount"
+    t.text "notes"
+    t.datetime "date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_records_on_category_id"
+    t.index ["user_id"], name: "index_records_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -28,4 +47,6 @@ ActiveRecord::Schema.define(version: 2020_06_03_054122) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "records", "categories"
+  add_foreign_key "records", "users"
 end
