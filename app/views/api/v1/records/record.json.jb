@@ -1,0 +1,11 @@
+json = {
+  id: @record.id, 
+  date: @record.date,
+  notes: @record.notes,
+  category: {
+    id: @record.category.id,
+    name: @record.category.name
+  },
+  amount: @record.amount,
+  record_type: @record.record_type
+}
