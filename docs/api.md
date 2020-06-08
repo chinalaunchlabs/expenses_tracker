@@ -1,3 +1,24 @@
+# Table of Contents
+- [What is REST?](#what-is-rest-)
+- [Authentication](#authentication)
+  * [Registration](#registration)
+  * [Login](#login)
+- [Categories](#categories)
+  * [Fetching categories](#fetching-categories)
+- [Records](#records)
+  * [Authentication](#authentication-1)
+  * [Create](#create)
+  * [Fetch all](#fetch-all)
+  * [Update](#update)
+  * [Delete](#delete)
+  * [Overview](#overview)
+  * [Seed](#seed)
+
+
+## What is REST? 
+
+(Here)[https://www.smashingmagazine.com/2018/01/understanding-using-rest-api/] is a great introduction to REST API and how to use it.
+
 ## Authentication
 
 ### Registration
