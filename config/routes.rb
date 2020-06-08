@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   devise_for :users
-  namespace :api do
+  namespace :api, defaults: { format: :json } do
     namespace :v1 do
 
       post 'sign_up' => 'authentication#sign_up'
@@ -8,7 +8,12 @@ Rails.application.routes.draw do
     
       resources :categories, only: [:index]
 
-      resources :records
+      resources :records do 
+        collection do
+          get 'overview'
+          get 'seed'
+        end
+      end
 
     end
   end

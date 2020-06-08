@@ -7,5 +7,5 @@ json = {
     name: @record.category.name
   },
   amount: @record.amount,
-  record_type: @record.record_type
+  record_type: @record.read_attribute_before_type_cast(:record_type)
 }

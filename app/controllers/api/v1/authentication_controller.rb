@@ -14,14 +14,18 @@ class Api::V1::AuthenticationController < ApplicationController
 
   def sign_in
     @user = User.find_by email: params[:email]
-    if @user.valid_password?(params[:password])
+    if @user.present? && @user.valid_password?(params[:password])
       render json: {
         message: "Successfully signed in!",
         token: JsonWebToken.encode({user_id: @user.id}),
         user: @user.as_json(only: [:id, :name, :email])
       }, status: :ok
     else
-      render json: { error: "Could not log in." }, status: :unauthorized
+      unless @user.present?
+        render json: { error: "Could not find an account with an email '#{params[:email]}'." }, status: :unauthorized
+      else
+        render json: { error: "Please check your email or password." }, status: :unauthorized
+      end
     end
   end
 

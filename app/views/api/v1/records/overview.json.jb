@@ -1,0 +1,4 @@
+json = {
+  income: @income,
+  expenses: @expenses
+}
