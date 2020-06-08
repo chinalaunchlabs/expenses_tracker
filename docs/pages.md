@@ -103,6 +103,6 @@ The API response is restricted to send out a maximum of 10 items per call. If th
 
 On the upper right corner of the page, the user can click on the Search icon and enter a query. The app should implement a search debounce so that it does not keep requesting the server for new data as soon as the TextField's text value changes.
 
-If the only hook the app listens to before making a search request is the `onChanged` callback of the TextField, then quickly typing "hello", will fire 5 separate requests for `h`, `he`, `hel`, `hell`, and `hello`. 
+If the only hook the app listens to before making a search request is the `onChanged` callback of the TextField, then quickly typing "hello", will fire 5 separate requests for `h`, `he`, `hel`, `hell`, and `hello`, which is a waste of network resources. 
 
 ![login](img/search.gif)

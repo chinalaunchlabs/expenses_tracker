@@ -17,7 +17,10 @@
 
 ## What is REST? 
 
-(Here)[https://www.smashingmagazine.com/2018/01/understanding-using-rest-api/] is a great introduction to REST API and how to use it.
+[Here](https://www.smashingmagazine.com/2018/01/understanding-using-rest-api/) is a great introduction to REST API and how to use it.
+
+We usually use [Postman](https://www.postman.com/) to send raw API requests to the server for testing. 
+
 
 ## Authentication
 
