@@ -4,7 +4,8 @@
 
 **POST /api/v1/sign_up**
 
-Sample Request:
+#### Sample Request:
+
 ```
 {
   "name": "Your Name",
@@ -19,7 +20,7 @@ Sample Request:
 | email     | User's email, cannot be a duplicate |
 | password  |                                     |
 
-Sample Response:
+#### Sample Response:
 
 *Success*
 ```
@@ -45,7 +46,7 @@ Sample Response:
 
 **POST /api/v1/sign_in**
 
-Sample Request:
+#### Sample Request:
 ```
 {
   "email": "name@domain.com",
@@ -53,7 +54,8 @@ Sample Request:
 }
 ```
 
-Sample Response:
+#### Sample Response:
+
 *Success*
 ```
 {
@@ -73,6 +75,9 @@ Sample Response:
     "error": "Please check your email or password."
 }
 ```
+
+
+==============
 
 
 ## Categories
@@ -110,21 +115,82 @@ Sample Response:
 
 | Field | Description                                                                                  |
 |-------|----------------------------------------------------------------------------------------------|
-| id    | id of the Category item in database, used to identify the category upon creation of a record |
+| id    | used to identify the category upon creation of a record |
 | name  | name of category                                                                             |
 | icon  | relative path of image icon (ie. to fetch the image, prepend the BASE_URL)                   |
 
 
+==============
+
+
 ## Records
+
+### Authentication
+
+For all of the following methods, the request must have a Bearer Authorization header, otherwise the calls will fail with an Unauthorized error. The Bearer token is of the format `Bearer <token>` where `token` is returned in a successful registration or login call. (Read more on how to make authenticated calls on Flutter [here](https://flutter.dev/docs/cookbook/networking/authenticated-requests).)
+
 
 ### Create
 
+#### Sample Request
+
+**POST /api/v1/records**
+
+```
+{
+  "record": {
+    "amount": 100.00,
+    "notes": "New expense",
+    "record_type": 0,
+    "date": "2020-06-01T00:00:00.000Z",
+    "category_id": 1
+  }
+}
+```
+
+| Parameter   | Description                                                                |
+|-------------|----------------------------------------------------------------------------|
+| record_type | `0` - income, `1` - expense                                                |
+| category_id | must match any of the category ids returned in the /api/v1/categories call |
+
+
+
+#### Sample Response:
+
+```
+{
+    "id": 19,
+    "date": "2020-06-01T00:00:00.000Z",
+    "notes": "New expense",
+    "category": {
+        "id": 1,
+        "name": "Food & Drinks"
+    },
+    "amount": 100,
+    "record_type": 0
+}
+```
+
 ### Fetch all
+
+This method will return a list of records ordered by date descending, so the latest records (according to the `date` specified) will appear first. 
+
+The response is paginated; each call will return a maximum of 10 records.
+
+#### Sample Request
 
 **GET /api/v1/records**
 
+Below are optional parameters you can append to the request, eg. `GET /api/v1/records?q=Jollibee` will return all records with "Jollibee" in the notes.
 
-Sample Response:
+| Parameter | Description                                                             |
+|-----------|-------------------------------------------------------------------------|
+| page      | offset the list of records by `page` amount                             |
+| limit     | fetch the first `limit` records, if present disregards `page` parameter |
+| q         | query the `notes` fields of the Record table                            |
+
+
+#### Sample Response:
 
 ```
 {
@@ -164,8 +230,103 @@ Sample Response:
     }
 }
 ```
-### Overview
 
 ### Update
 
+#### Sample Request
+
+**PATCH /api/v1/records/:id**
+
+```
+{
+  "record": {
+    "amount": 120.00,
+    "notes": "Updated expense",
+    "record_type": 0,
+    "date": "2020-06-01T00:00:00.000Z",
+    "category_id": 1
+  }
+}
+```
+
+This accepts essentially the same parameters as the Create method above. The `:id` substring must be replaced with the id of the record you are trying to update, eg. `PATCH /api/v1/records/123`.
+
+
+#### Sample Response:
+
+```
+{
+    "id": 19,
+    "date": "2020-06-01T00:00:00.000Z",
+    "notes": "Updated expense",
+    "category": {
+        "id": 1,
+        "name": "Food & Drinks"
+    },
+    "amount": 120,
+    "record_type": 0
+}
+```
+
 ### Delete
+
+#### Sample Request
+
+**DELETE /api/v1/records/:id**
+
+The `:id` substring must be replaced with the id of the record you are trying to delete, eg. `DELETE /api/v1/records/123`.
+
+#### Sample Response:
+
+```
+{
+    "message": "Record successfully deleted."
+}
+```
+
+
+### Overview
+
+This method will return the total income and expenses for the account for all time. This is used for the display of graphs.
+
+
+#### Sample Request
+
+**GET /api/v1/records/overview**
+
+
+#### Sample Response:
+
+```
+{
+    "income": 201691.00,
+    "expenses": 106947.00
+}
+```
+
+
+### Seed
+
+This is a quick way to add a large amount of records to the database for the currently logged-in user, ie. useful if you want to test pagination.
+
+
+#### Sample Request
+
+**GET /api/v1/records/seed**
+
+Accepts an optional parameter `num`.
+
+| Parameter   | Description                                                                |
+|-------------|----------------------------------------------------------------------------|
+| num         | number of records to add, defaults to 10 if unspecified                    |
+
+**!! WARNING !!** Specifying a large `num` will cause the server to slow down. Please use with discretion.
+
+
+#### Sample Response:
+
+```
+{
+    "message": "Records seeded successfully!"
+}
+```
