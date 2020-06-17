@@ -91,13 +91,6 @@ Rails.application.configure do
   config.lograge.enabled = true
   config.lograge.formatter = Lograge::Formatters::Json.new
 
-  config.lograge.custom_payload do |controller|
-    {
-      request_id: controller.request.request_id,
-      host: controller.request.host,
-      user_id: controller.current_user.try(:id)
-    }
-  end
 
   config.lograge.custom_options = lambda do |event|
     unwanted_keys = %w(format action controller)
@@ -114,6 +107,13 @@ Rails.application.configure do
     if (eo = event.payload[:exception_object]) 
       ret.merge!({
         exception: event.payload[:exception]
+      })
+    end
+
+    # add user id
+    if (user_id = event.payload[:uid]) 
+      ret.merge!({
+        user_id: user_id
       })
     end
 

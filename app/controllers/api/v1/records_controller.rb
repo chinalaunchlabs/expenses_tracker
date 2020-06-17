@@ -31,16 +31,11 @@ class Api::V1::RecordsController < ApplicationController
       @records = @records.where(category_id: @category_ids)
     end
 
-    puts @records.inspect
-    puts "Limit: #{@limit}"
-
     if @limit > 0
       @records = @records.limit(@limit)
     else
       @records = @records.page(page).per(10)
     end
-
-    puts @records.inspect
   
     render 'api/v1/records/index'
   end

@@ -35,6 +35,11 @@ class ApplicationController < ActionController::API
   end
 
 
+  def append_info_to_payload(payload)
+    super
+    payload[:uid] = current_user.id if current_user != nil
+  end
+
   protected
 
   def authorize_user!
