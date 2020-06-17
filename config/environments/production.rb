@@ -42,10 +42,10 @@ Rails.application.configure do
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
-  config.log_level = :debug
+  # config.log_level = :debug
 
   # Prepend all log lines with the following tags.
-  config.log_tags = [ :request_id ]
+  # config.log_tags = [ :request_id ]
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
@@ -68,7 +68,7 @@ Rails.application.configure do
   config.active_support.deprecation = :notify
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
+  # config.log_formatter = ::Logger::Formatter.new
 
   # Use a different logger for distributed setups.
   # require 'syslog/logger'
@@ -78,6 +78,52 @@ Rails.application.configure do
     logger           = ActiveSupport::Logger.new(STDOUT)
     logger.formatter = config.log_formatter
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
+  end
+
+  # Lograge config
+  formatter = ::Logger::Formatter.new
+  formatter = proc { |severity, datetime, progname, msg|
+    if severity == "FATAL"
+      # suppress fatal logs since they mess up the
+      # lograge format, and the information is already in
+      # the preceeding INFO message anyway
+      ""
+    else
+      "#{msg}\n"
+    end
+  }
+  config.log_formatter = formatter
+
+  config.lograge.enabled = true
+  config.lograge.formatter = Lograge::Formatters::Json.new
+
+  config.lograge.custom_payload do |controller|
+    {
+      request_id: controller.request.request_id,
+      host: controller.request.host,
+      user_id: controller.current_user.try(:id)
+    }
+  end
+
+  config.lograge.custom_options = lambda do |event|
+    unwanted_keys = %w(format action controller)
+
+    params = event.payload[:params].reject { |k,_| unwanted_keys.include? k }
+
+    ret = {
+      app: Rails.application.class.parent_name.underscore,
+      environment: Rails.env,
+      params: params
+    }
+
+    # add exception message
+    if (eo = event.payload[:exception_object]) 
+      ret.merge!({
+        exception: event.payload[:exception]
+      })
+    end
+
+    ret
   end
 
   # Do not dump schema after migrations.
