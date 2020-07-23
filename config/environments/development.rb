@@ -51,4 +51,66 @@ Rails.application.configure do
   # Use an evented file watcher to asynchronously detect changes in source code,
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+
+  # Use default logging formatter so that PID and timestamp are not suppressed.
+  # config.log_formatter = ::Logger::Formatter.new
+
+  # Use a different logger for distributed setups.
+  # require 'syslog/logger'
+  # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
+  
+  config.log_level = :info
+
+  if ENV["RAILS_LOG_TO_STDOUT"].present?
+    logger           = ActiveSupport::Logger.new(STDOUT)
+    logger.formatter = config.log_formatter
+    config.logger    = ActiveSupport::TaggedLogging.new(logger)
+  end
+
+  # Lograge config
+  formatter = ::Logger::Formatter.new
+  formatter = proc { |severity, datetime, progname, msg|
+    if severity == "FATAL"
+      # suppress fatal logs since they mess up the
+      # lograge format, and the information is already in
+      # the preceeding INFO message anyway
+      ""
+    else
+      "#{msg}\n"
+    end
+  }
+  config.log_formatter = formatter
+
+  config.lograge.enabled = true
+  config.lograge.formatter = Lograge::Formatters::Json.new
+
+
+  config.lograge.custom_options = lambda do |event|
+    # puts "event: #{event.payload[:uid]}"
+    unwanted_keys = %w(format action controller)
+
+    params = event.payload[:params].reject { |k,_| unwanted_keys.include? k }
+
+    ret = {
+      app: Rails.application.class.parent_name.underscore,
+      environment: Rails.env,
+      params: params
+    }
+
+    # add exception message
+    if (eo = event.payload[:exception_object]) 
+      ret.merge!({
+        exception: event.payload[:exception]
+      })
+    end
+
+    # add user id
+    if (user_id = event.payload[:uid]) 
+      ret.merge!({
+        user_id: user_id
+      })
+    end
+
+    ret
+  end
 end
