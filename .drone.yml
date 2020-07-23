@@ -6,3 +6,11 @@ steps:
 - name: build
   commands: 
   - docker build -t expenses/api .
+
+- name: publish
+  image: plugins/docker
+  settings:
+    repo: registry.koda.ws/expenses/api
+    registry: registry.koda.ws
+    username: testuser
+    password: testpassword
