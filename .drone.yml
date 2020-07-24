@@ -1,16 +1,17 @@
 kind: pipeline
-type: exec
+type: docker
 name: default
 
 steps:
-- name: build
-  commands: 
-  - docker build -t expenses/api .
-
-- name: publish
+- name: build and publish
   image: plugins/docker
   settings:
     repo: registry.koda.ws/expenses/api
     registry: registry.koda.ws
     username: testuser
     password: testpassword
+    tags:
+      - latest
+  commands:
+  - docker build -t expenses/api .
+  - docker push registry.koda.ws/expenses/api
