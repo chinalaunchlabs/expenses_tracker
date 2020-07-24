@@ -9,7 +9,6 @@ steps:
   - apt-get update -qq && apt-get install -y nodejs postgresql-client
   - gem install bundler:2.0.2
   - bundle install
-  - rails server -b 0.0.0.0
 
 - name: publish
   image: plugins/docker
