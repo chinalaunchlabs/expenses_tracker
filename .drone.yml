@@ -3,15 +3,18 @@ type: docker
 name: default
 
 steps:
-- name: build and publish
+- name: build
+  image: ruby:2.6
+  commands:
+  - apt-get update -qq && apt-get install -y nodejs postgresql-client
+  - gem install bundler:2.0.2
+  - bundle install
+  - rails server -b 0.0.0.0
+
+- name: publish
   image: plugins/docker
   settings:
     repo: registry.koda.ws/expenses/api
     registry: registry.koda.ws
     username: testuser
     password: testpassword
-    tags:
-      - latest
-  commands:
-  - docker build -t expenses/api .
-  - docker push registry.koda.ws/expenses/api
