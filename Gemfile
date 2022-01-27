@@ -13,7 +13,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'jwt'
 gem 'rack-cors'
 gem 'activestorage'
-gem 'sidekiq', '~> 5'
+gem 'sidekiq', '~> 6'
 gem 'simple_command'
 gem 'devise'
 
